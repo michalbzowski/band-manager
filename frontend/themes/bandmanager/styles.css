@@ -1,0 +1,22 @@
+@import url('./main-layout.css');
+@import url('./views/musicians-view.css');
+@import url('./views/musician-form-view.css');
+@import url('./views/events-view.css');
+@import url('./views/instrument-owners-view.css');
+@import url('./views/instrument-types-view.css');
+@import url('./views/instrument-companies-view.css');
+@import url('./views/instruments-view.css');
+@import url('./views/about-me-view.css');
+@import url('./views/uniform-parts-view.css');
+@import url('./views/uniforms-view.css');
+@import url('@fontsource/arvo/index.css');    html {
+--lumo-font-family: Arvo;
+
+    }
+
+    [theme~="dark"] {
+      --lumo-primary-color: hsl(214, 48%, 42%);
+      --lumo-primary-color-50pct: hsla(214, 48%, 42%, 0.5);
+      --lumo-primary-color-10pct: hsla(214, 48%, 42%, 0.1);
+
+    }
