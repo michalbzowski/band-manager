@@ -5,22 +5,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.bzowski.bandmanager.data.entity.SamplePerson;
+import pl.bzowski.bandmanager.data.entity.Musician;
 
 @Service
-public class SamplePersonService {
+public class MusicianService {
 
-    private final SamplePersonRepository repository;
+    private final MusicianRepository repository;
 
-    public SamplePersonService(SamplePersonRepository repository) {
+    public MusicianService(MusicianRepository repository) {
         this.repository = repository;
     }
 
-    public Optional<SamplePerson> get(Long id) {
+    public Optional<Musician> get(Long id) {
         return repository.findById(id);
     }
 
-    public SamplePerson update(SamplePerson entity) {
+    public Musician update(Musician entity) {
         return repository.save(entity);
     }
 
@@ -28,11 +28,11 @@ public class SamplePersonService {
         repository.deleteById(id);
     }
 
-    public Page<SamplePerson> list(Pageable pageable) {
+    public Page<Musician> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
-    public Page<SamplePerson> list(Pageable pageable, Specification<SamplePerson> filter) {
+    public Page<Musician> list(Pageable pageable, Specification<Musician> filter) {
         return repository.findAll(filter, pageable);
     }
 

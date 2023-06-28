@@ -1,0 +1,1 @@
+import{U as o}from"./indexhtml-b77f1cb8.js";const r={tagName:"vaadin-horizontal-layout",displayName:"HorizontalLayout",elements:[{selector:"vaadin-horizontal-layout",displayName:"Layout",properties:[o.backgroundColor,o.borderColor,o.borderWidth,o.borderRadius,o.padding,o.gap]}]};export{r as default};

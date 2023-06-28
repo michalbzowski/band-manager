@@ -19,8 +19,8 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
-import pl.bzowski.bandmanager.data.entity.SamplePerson;
-import pl.bzowski.bandmanager.data.service.SamplePersonService;
+import pl.bzowski.bandmanager.data.entity.Musician;
+import pl.bzowski.bandmanager.data.service.MusicianService;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Musician Form")
@@ -34,14 +34,13 @@ public class MusicianFormView extends Div {
     private EmailField email = new EmailField("Email address");
     private DatePicker dateOfBirth = new DatePicker("Birthday");
     private PhoneNumberField phone = new PhoneNumberField("Phone number");
-    private TextField occupation = new TextField("Occupation");
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
-    private Binder<SamplePerson> binder = new Binder<>(SamplePerson.class);
+    private Binder<Musician> binder = new Binder<>(Musician.class);
 
-    public MusicianFormView(SamplePersonService personService) {
+    public MusicianFormView(MusicianService personService) {
         addClassName("musician-form-view");
 
         add(createTitle());
@@ -60,7 +59,7 @@ public class MusicianFormView extends Div {
     }
 
     private void clearForm() {
-        binder.setBean(new SamplePerson());
+        binder.setBean(new Musician());
     }
 
     private Component createTitle() {
@@ -70,7 +69,7 @@ public class MusicianFormView extends Div {
     private Component createFormLayout() {
         FormLayout formLayout = new FormLayout();
         email.setErrorMessage("Please enter a valid email address");
-        formLayout.add(firstName, lastName, dateOfBirth, phone, email, occupation);
+        formLayout.add(firstName, lastName, dateOfBirth, phone, email);
         return formLayout;
     }
 

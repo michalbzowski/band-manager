@@ -29,8 +29,8 @@ import jakarta.annotation.security.RolesAllowed;
 import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.bzowski.bandmanager.data.entity.SamplePerson;
-import pl.bzowski.bandmanager.data.service.SamplePersonService;
+import pl.bzowski.bandmanager.data.entity.Musician;
+import pl.bzowski.bandmanager.data.service.MusicianService;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Uniforms")
@@ -42,7 +42,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
     private final String SAMPLEPERSON_ID = "samplePersonID";
     private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "uniforms/%s/edit";
 
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private final Grid<Musician> grid = new Grid<>(Musician.class, false);
 
     private TextField firstName;
     private TextField lastName;
@@ -56,14 +56,14 @@ public class UniformsView extends Div implements BeforeEnterObserver {
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<SamplePerson> binder;
+    private final BeanValidationBinder<Musician> binder;
 
-    private SamplePerson samplePerson;
+    private Musician samplePerson;
 
-    private final SamplePersonService samplePersonService;
+    private final MusicianService musicianService;
 
-    public UniformsView(SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
+    public UniformsView(MusicianService musicianService) {
+        this.musicianService = musicianService;
         addClassNames("uniforms-view");
 
         // Create UI
@@ -82,16 +82,16 @@ public class UniformsView extends Div implements BeforeEnterObserver {
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("occupation").setAutoWidth(true);
         grid.addColumn("role").setAutoWidth(true);
-        LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
-                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
-                        important -> important.isImportant()
-                                ? "var(--lumo-primary-text-color)"
-                                : "var(--lumo-disabled-text-color)");
+//        LitRenderer<Musician> importantRenderer = LitRenderer.<Musician>of(
+//                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
+//                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
+//                        important -> important.isImportant()
+//                                ? "var(--lumo-primary-text-color)"
+//                                : "var(--lumo-disabled-text-color)");
+//
+//        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
 
-        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
-
-        grid.setItems(query -> samplePersonService.list(
+        grid.setItems(query -> musicianService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -107,7 +107,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(SamplePerson.class);
+        binder = new BeanValidationBinder<>(Musician.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -121,10 +121,10 @@ public class UniformsView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                    this.samplePerson = new Musician();
                 }
                 binder.writeBean(this.samplePerson);
-                samplePersonService.update(this.samplePerson);
+                musicianService.update(this.samplePerson);
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -144,7 +144,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
         if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
+            Optional<Musician> samplePersonFromBackend = musicianService.get(samplePersonId.get());
             if (samplePersonFromBackend.isPresent()) {
                 populateForm(samplePersonFromBackend.get());
             } else {
@@ -209,7 +209,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
+    private void populateForm(Musician value) {
         this.samplePerson = value;
         binder.readBean(this.samplePerson);
 
