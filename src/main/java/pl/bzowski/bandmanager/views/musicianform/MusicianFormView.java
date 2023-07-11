@@ -20,7 +20,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.data.service.MusicianService;
+import pl.bzowski.bandmanager.musician.queries.MusicianService;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Musician Form")

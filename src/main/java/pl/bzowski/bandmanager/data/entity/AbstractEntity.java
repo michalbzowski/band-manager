@@ -7,23 +7,22 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Version;
 
+import java.util.UUID;
+
 @MappedSuperclass
 public abstract class AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idgenerator")
-    // The initial value is to account for data.sql demo data ids
-    @SequenceGenerator(name = "idgenerator", initialValue = 1000)
-    private Long id;
+    private UUID id;
 
     @Version
     private int version;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

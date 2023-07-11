@@ -1,6 +1,8 @@
 package pl.bzowski.bandmanager.data.service;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,7 +18,7 @@ public class EventService {
         this.repository = repository;
     }
 
-    public Optional<Event> get(Long id) {
+    public Optional<Event> get(UUID id) {
         return repository.findById(id);
     }
 
@@ -24,7 +26,7 @@ public class EventService {
         return repository.save(entity);
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         repository.deleteById(id);
     }
 

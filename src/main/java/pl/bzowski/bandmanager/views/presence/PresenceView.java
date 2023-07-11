@@ -3,23 +3,16 @@ package pl.bzowski.bandmanager.views.presence;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
-import pl.bzowski.bandmanager.data.entity.Event;
-import pl.bzowski.bandmanager.data.entity.Musician;
 import pl.bzowski.bandmanager.data.service.EventRepository;
+import pl.bzowski.bandmanager.musician.queries.MusicianRepository;
 import pl.bzowski.bandmanager.views.MainLayout;
 
-import java.util.List;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @PageTitle("Presence")
@@ -27,15 +20,16 @@ import java.util.stream.Collectors;
 @RouteAlias(value = "", layout = MainLayout.class)
 @RolesAllowed("USER")
 public class PresenceView extends VerticalLayout {
-
-
     private final EventRepository eventRepository;
+    private final MusicianRepository musicianRepository;
 
     private Grid<Presence> grid;
     ComboBox<String> eventComboBox;
 
-    public PresenceView(EventRepository eventRepository) {
+    public PresenceView(EventRepository eventRepository, MusicianRepository musicianRepository) {
         this.eventRepository = eventRepository;
+        this.musicianRepository = musicianRepository;
+
         comboBox();
         grid();
         add(eventComboBox, grid);
@@ -48,7 +42,7 @@ public class PresenceView extends VerticalLayout {
     private void grid() {
         grid = new Grid<>();
         grid.addColumn(Presence::getFullName).setHeader("Imię i nazwisko");
-        grid.addComponentColumn(this::createCheckBox).setHeader("Checkbox");
+        grid.addComponentColumn(this::createCheckBox).setHeader("Obecna / obecny");
     }
 
     private ComboBox<String> comboBox() {
@@ -56,6 +50,7 @@ public class PresenceView extends VerticalLayout {
         var all = eventRepository.findAll().stream().map(e -> e.getName()).collect(Collectors.toSet());
         eventComboBox.setItems(all);
         eventComboBox.setLabel("Wybierz wydarzenie");
+        eventComboBox.setValue(all.stream().findFirst().get());
         eventComboBox.addValueChangeListener(event -> {
             String selectedEvent = event.getValue();
             refreshGrid(selectedEvent);
@@ -64,13 +59,12 @@ public class PresenceView extends VerticalLayout {
     }
 
     private void refreshGrid(String selectedEvent) {
-        // Pobranie listy osób dla wybranego wydarzenia z repozytorium
-        // Dodanie przykładowych danych do siatki
-        Presence person1 = new Presence("Jan Kowalski");
-        Presence person2 = new Presence("Anna Nowak");
-        grid.setItems(person1, person2);
-//        List<Presence> people = personRepository.findByEvent(selectedEvent);
-//        grid.setItems(people);
+        var pres = musicianRepository.findAll()
+                .stream()
+                .map(m -> new Presence(m.getFirstName() + " " + m.getLastName()))
+                .sorted(Comparator.comparing(Presence::getFullName))
+                .collect(Collectors.toList());
+        grid.setItems(pres);
     }
 
     private Checkbox createCheckBox(Presence presence) {

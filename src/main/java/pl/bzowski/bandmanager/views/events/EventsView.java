@@ -24,6 +24,8 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.bzowski.bandmanager.data.entity.Event;
@@ -120,7 +122,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> eventId = event.getRouteParameters().get(EVENT_ID).map(Long::parseLong);
+        Optional<UUID> eventId = event.getRouteParameters().get(EVENT_ID).map(UUID::fromString);
         if (eventId.isPresent()) {
             Optional<Event> eventFromBackend = eventService.get(eventId.get());
             if (eventFromBackend.isPresent()) {
@@ -148,7 +150,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
         name = new TextField("Name");
         address = new TextField("Address");
         dateTime = new DateTimePicker("Date Time");
-        dateTime.setStep(Duration.ofSeconds(1));
+        dateTime.setStep(Duration.ofMinutes(1));
         formLayout.add(name, address, dateTime);
 
         editorDiv.add(formLayout);

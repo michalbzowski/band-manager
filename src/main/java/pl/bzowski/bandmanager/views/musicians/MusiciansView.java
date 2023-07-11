@@ -16,21 +16,29 @@ import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+
 import java.util.Optional;
+import java.util.UUID;
+
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.data.service.MusicianService;
+import pl.bzowski.bandmanager.musician.commands.CreateMusicianCommand;
+import pl.bzowski.bandmanager.musician.queries.GetAllMusiciansQuery;
+import pl.bzowski.bandmanager.musician.commands.UpdateMusicianCommand;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Musicians")
@@ -49,8 +57,9 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
     private TextField email;
     private TextField phone;
     private DatePicker dateOfBirth;
-    private TextField role;
-    private Checkbox important;
+    private DatePicker joinDate;
+    private Checkbox active;
+    private TextField address;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
@@ -59,10 +68,13 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
 
     private Musician musician;
 
-    private final MusicianService musicianService;
+    private final QueryGateway queryGateway;
 
-    public MusiciansView(MusicianService musicianService) {
-        this.musicianService = musicianService;
+    private final CommandGateway commandGateway;
+
+    public MusiciansView(QueryGateway queryGateway, CommandGateway commandGateway) {
+        this.queryGateway = queryGateway;
+        this.commandGateway = commandGateway;
         addClassNames("musicians-view");
 
         // Create UI
@@ -70,7 +82,6 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
 
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
-
         add(splitLayout);
 
         // Configure Grid
@@ -79,20 +90,21 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("dateOfBirth").setAutoWidth(true);
-//        grid.addColumn("occupation").setAutoWidth(true);
-//        grid.addColumn("role").setAutoWidth(true);
-//        LitRenderer<Musician> importantRenderer = LitRenderer.<Musician>of(
-//                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-//                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
-//                        important -> important.isImportant()
-//                                ? "var(--lumo-primary-text-color)"
-//                                : "var(--lumo-disabled-text-color)");
+        grid.addColumn("joinDate").setAutoWidth(true);
+        grid.addColumn("active").setAutoWidth(true);
+        grid.addColumn("address").setAutoWidth(true);
 //
-//        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
+        grid.setItems(query -> {
+            var page = query.getPage();
+            var pageSize = query.getPageSize();
+            var springDataSort = VaadinSpringDataHelpers.toSpringDataSort(query);
+            var of = PageRequest.of(page, pageSize, springDataSort);
+            var stream = queryGateway.query(new GetAllMusiciansQuery(), ResponseTypes.multipleInstancesOf(Musician.class)).join();
 
-        grid.setItems(query -> musicianService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+            return stream.stream();
+        });
+
+//        grid.setItems(query -> queryGateway.query(new GetAllMusicicansQuery(PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query))), ResponseTypes.multipleInstancesOf(Musician.class)).join().stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
@@ -123,7 +135,28 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
                     this.musician = new Musician();
                 }
                 binder.writeBean(this.musician);
-                musicianService.update(this.musician);
+//                commandGateway.send(new UpdateMusicianCommand(this.musician));
+                if(this.musician.getId() == null) {
+                    commandGateway.send(new CreateMusicianCommand(UUID.randomUUID(),
+                            this.musician.getFirstName(),
+                            this.musician.getLastName(),
+                            this.musician.getEmail(),
+                            this.musician.getPhone(),
+                            this.musician.getDateOfBirth(),
+                            this.musician.getJoinDate(),
+                            this.musician.getActive(),
+                            this.musician.getAddress())).join();
+                } else {
+                    commandGateway.send(new UpdateMusicianCommand(this.musician.getId(),
+                            this.musician.getFirstName(),
+                            this.musician.getLastName(),
+                            this.musician.getEmail(),
+                            this.musician.getPhone(),
+                            this.musician.getDateOfBirth(),
+                            this.musician.getJoinDate(),
+                            this.musician.getActive(),
+                            this.musician.getAddress())).join();
+                }
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -141,9 +174,9 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> musicianId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
+        Optional<UUID> musicianId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(UUID::fromString);
         if (musicianId.isPresent()) {
-            Optional<Musician> musicianFromBackend = musicianService.get(musicianId.get());
+            Optional<Musician> musicianFromBackend = queryGateway.query(new GetOneMusician(musicianId.get()), ResponseTypes.optionalInstanceOf(Musician.class)).join();
             if (musicianFromBackend.isPresent()) {
                 populateForm(musicianFromBackend.get());
             } else {
@@ -172,7 +205,10 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
         email = new TextField("Email");
         phone = new TextField("Phone");
         dateOfBirth = new DatePicker("Date Of Birth");
-        formLayout.add(firstName, lastName, email, phone, dateOfBirth);
+        joinDate = new DatePicker("Join data");
+        active = new Checkbox("Active");
+        address = new TextField("Address");
+        formLayout.add(firstName, lastName, email, phone, dateOfBirth, joinDate, active, address);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);

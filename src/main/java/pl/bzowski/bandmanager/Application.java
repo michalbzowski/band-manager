@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties;
 import org.springframework.context.annotation.Bean;
-import pl.bzowski.bandmanager.data.service.MusicianRepository;
+import pl.bzowski.bandmanager.musician.queries.MusicianRepository;
 
 /**
  * The entry point of the Spring Boot application.

@@ -19,7 +19,6 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -30,7 +29,7 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.data.service.MusicianService;
+import pl.bzowski.bandmanager.musician.queries.MusicianService;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Uniforms")
@@ -144,7 +143,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
         if (samplePersonId.isPresent()) {
-            Optional<Musician> samplePersonFromBackend = musicianService.get(samplePersonId.get());
+            Optional<Musician> samplePersonFromBackend = null;//musicianService.get(samplePersonId.get());
             if (samplePersonFromBackend.isPresent()) {
                 populateForm(samplePersonFromBackend.get());
             } else {

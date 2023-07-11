@@ -13,6 +13,9 @@ public class Musician extends AbstractEntity {
     private String email;
     private String phone;
     private LocalDate dateOfBirth;
+    private LocalDate joinDate;
+    private Boolean active;
+    private String address;
 
 
     public String getFirstName() {
@@ -44,5 +47,29 @@ public class Musician extends AbstractEntity {
     }
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public LocalDate getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(LocalDate joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
