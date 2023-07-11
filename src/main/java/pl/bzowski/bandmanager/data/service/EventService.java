@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.bzowski.bandmanager.data.entity.Event;
+import pl.bzowski.bandmanager.data.entity.MusicEvent;
 
 @Service
 public class EventService {
@@ -18,11 +18,11 @@ public class EventService {
         this.repository = repository;
     }
 
-    public Optional<Event> get(UUID id) {
+    public Optional<MusicEvent> get(UUID id) {
         return repository.findById(id);
     }
 
-    public Event update(Event entity) {
+    public MusicEvent update(MusicEvent entity) {
         return repository.save(entity);
     }
 
@@ -30,11 +30,11 @@ public class EventService {
         repository.deleteById(id);
     }
 
-    public Page<Event> list(Pageable pageable) {
+    public Page<MusicEvent> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
-    public Page<Event> list(Pageable pageable, Specification<Event> filter) {
+    public Page<MusicEvent> list(Pageable pageable, Specification<MusicEvent> filter) {
         return repository.findAll(filter, pageable);
     }
 

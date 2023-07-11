@@ -6,7 +6,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import pl.bzowski.bandmanager.musician.commands.CreateMusicianCommand;
 import pl.bzowski.bandmanager.musician.commands.UpdateMusicianCommand;
-import pl.bzowski.bandmanager.musician.events.MusicianCreatedEvent;
+import pl.bzowski.bandmanager.musician.events.MusicianSignedUpEvent;
 import pl.bzowski.bandmanager.musician.events.MusicianUpdatedEvent;
 
 import java.time.LocalDate;
@@ -34,7 +34,7 @@ public class MusicianAggregate {
 
     @CommandHandler
     public MusicianAggregate(CreateMusicianCommand command) {
-        apply(new MusicianCreatedEvent(command.musicianId(),
+        apply(new MusicianSignedUpEvent(command.musicianId(),
                 command.firstName(),
                 command.lastName(),
                 command.email(),
@@ -47,7 +47,7 @@ public class MusicianAggregate {
     }
 
     @EventSourcingHandler
-    public void on(MusicianCreatedEvent evt) {
+    public void on(MusicianSignedUpEvent evt) {
         this.musicianId = evt.getMusicianId();
         this.firstName = evt.getFirstName();
         this.lastName = evt.getLastName();

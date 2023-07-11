@@ -22,14 +22,24 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import pl.bzowski.bandmanager.data.entity.Event;
+import pl.bzowski.bandmanager.data.entity.MusicEvent;
+import pl.bzowski.bandmanager.data.entity.Musician;
 import pl.bzowski.bandmanager.data.service.EventService;
+import pl.bzowski.bandmanager.musicevent.CreateMusicEventCommand;
+import pl.bzowski.bandmanager.musicevent.GetAllMusicEventsQuery;
+import pl.bzowski.bandmanager.musicevent.GetMusicEventQuery;
+import pl.bzowski.bandmanager.musicevent.UpdateMusicEventCommand;
+import pl.bzowski.bandmanager.musician.queries.GetAllMusiciansQuery;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Events")
@@ -40,7 +50,9 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final String EVENT_ID = "eventID";
     private final String EVENT_EDIT_ROUTE_TEMPLATE = "events/%s/edit";
 
-    private final Grid<Event> grid = new Grid<>(Event.class, false);
+    private final Grid<MusicEvent> grid = new Grid<>(MusicEvent.class, false);
+    private final QueryGateway queryGateway;
+    private final CommandGateway commandGateway;
 
     private TextField name;
     private TextField address;
@@ -49,14 +61,13 @@ public class EventsView extends Div implements BeforeEnterObserver {
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<Event> binder;
+    private final BeanValidationBinder<MusicEvent> binder;
 
-    private Event event;
+    private MusicEvent event;
 
-    private final EventService eventService;
-
-    public EventsView(EventService eventService) {
-        this.eventService = eventService;
+    public EventsView(QueryGateway queryGateway, CommandGateway commandGateway) {
+        this.queryGateway = queryGateway;
+        this.commandGateway = commandGateway;
         addClassNames("events-view");
 
         // Create UI
@@ -71,9 +82,15 @@ public class EventsView extends Div implements BeforeEnterObserver {
         grid.addColumn("name").setAutoWidth(true);
         grid.addColumn("address").setAutoWidth(true);
         grid.addColumn("dateTime").setAutoWidth(true);
-        grid.setItems(query -> eventService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+
+        grid.setItems(query -> {
+            var page = query.getPage();
+            var pageSize = query.getPageSize();
+            var springDataSort = VaadinSpringDataHelpers.toSpringDataSort(query);
+            var of = PageRequest.of(page, pageSize, springDataSort);
+            var stream = queryGateway.query(new GetAllMusicEventsQuery(), ResponseTypes.multipleInstancesOf(MusicEvent.class)).join();
+            return stream.stream();
+        });
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
@@ -87,7 +104,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Event.class);
+        binder = new BeanValidationBinder<>(MusicEvent.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -101,10 +118,25 @@ public class EventsView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.event == null) {
-                    this.event = new Event();
+                    this.event = new MusicEvent();
                 }
                 binder.writeBean(this.event);
-                eventService.update(this.event);
+                if (this.event.getId() == null) {
+                    commandGateway.send(new CreateMusicEventCommand(
+                            event.getName(),
+                            event.getAddress(),
+                            event.getDateTime()
+                            )
+                    ).join();
+                } else {
+                    commandGateway.send(new UpdateMusicEventCommand(
+                            event.getId(),
+                            event.getName(),
+                            event.getAddress(),
+                            event.getDateTime()
+                            )
+                    ).join();
+                }
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -124,7 +156,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<UUID> eventId = event.getRouteParameters().get(EVENT_ID).map(UUID::fromString);
         if (eventId.isPresent()) {
-            Optional<Event> eventFromBackend = eventService.get(eventId.get());
+            Optional<MusicEvent> eventFromBackend = queryGateway.query(new GetMusicEventQuery(eventId.get()), ResponseTypes.optionalInstanceOf(MusicEvent.class)).join();
             if (eventFromBackend.isPresent()) {
                 populateForm(eventFromBackend.get());
             } else {
@@ -184,9 +216,8 @@ public class EventsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(Event value) {
+    private void populateForm(MusicEvent value) {
         this.event = value;
         binder.readBean(this.event);
-
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.musician.events.MusicianCreatedEvent;
+import pl.bzowski.bandmanager.musician.events.MusicianSignedUpEvent;
 import pl.bzowski.bandmanager.musician.events.MusicianUpdatedEvent;
 import pl.bzowski.bandmanager.views.musicians.GetOneMusician;
 
@@ -18,13 +18,12 @@ public class MusicianService {
 
     private final MusicianRepository repository;
 
-
     public MusicianService(MusicianRepository repository) {
         this.repository = repository;
     }
 
     @EventHandler
-    public void on(MusicianCreatedEvent event) {
+    public void on(MusicianSignedUpEvent event) {
         var entity = new Musician();
         entity.setId(event.getMusicianId());
         entity.setFirstName(event.getFirstName());

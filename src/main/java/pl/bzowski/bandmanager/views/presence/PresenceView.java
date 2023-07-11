@@ -8,94 +8,88 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
-import pl.bzowski.bandmanager.data.service.EventRepository;
-import pl.bzowski.bandmanager.musician.queries.MusicianRepository;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
+import pl.bzowski.bandmanager.data.entity.MusicEvent;
+import pl.bzowski.bandmanager.musicevent.GetAllMusicEventsQuery;
+import pl.bzowski.bandmanager.presence.ChangeMusicianPresenceCommand;
+import pl.bzowski.bandmanager.presence.PresenceDto;
+import pl.bzowski.bandmanager.presence.queries.GetMusicianPresenceInMusicEventQuery;
 import pl.bzowski.bandmanager.views.MainLayout;
 
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @PageTitle("Presence")
 @Route(value = "presence", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 @RolesAllowed("USER")
 public class PresenceView extends VerticalLayout {
-    private final EventRepository eventRepository;
-    private final MusicianRepository musicianRepository;
+    private final QueryGateway queryGateway;
+    private final CommandGateway commandGateway;
+    private Grid<PresenceDto> grid;
+    private ComboBox<MusicEvent> eventComboBox;
 
-    private Grid<Presence> grid;
-    ComboBox<String> eventComboBox;
+    private final Map<Checkbox, UUID> checkboxMusicianIdMap = new HashMap<>();
 
-    public PresenceView(EventRepository eventRepository, MusicianRepository musicianRepository) {
-        this.eventRepository = eventRepository;
-        this.musicianRepository = musicianRepository;
+    public PresenceView(QueryGateway queryGateway, CommandGateway commandGateway) {
+        this.queryGateway = queryGateway;
+        this.commandGateway = commandGateway;
+
 
         comboBox();
         grid();
         add(eventComboBox, grid);
 
         // Pobranie i wyświetlenie domyślnego wydarzenia
-        String selectedEvent = eventComboBox.getValue();
-        refreshGrid(selectedEvent);
+        MusicEvent selectedEvent = eventComboBox.getValue();
+        if(selectedEvent != null) {
+            refreshGrid(selectedEvent.getId());
+        }
     }
 
     private void grid() {
         grid = new Grid<>();
-        grid.addColumn(Presence::getFullName).setHeader("Imię i nazwisko");
+        grid.addColumn(PresenceDto::getFullName).setHeader("Imię i nazwisko");
         grid.addComponentColumn(this::createCheckBox).setHeader("Obecna / obecny");
     }
 
-    private ComboBox<String> comboBox() {
+    private ComboBox<MusicEvent> comboBox() {
         this.eventComboBox = new ComboBox<>();
-        var all = eventRepository.findAll().stream().map(e -> e.getName()).collect(Collectors.toSet());
+        List<MusicEvent> all = queryGateway.query(new GetAllMusicEventsQuery(), ResponseTypes.multipleInstancesOf(MusicEvent.class)).join();
+//        List<MusicEvent> all = List.of();
         eventComboBox.setItems(all);
         eventComboBox.setLabel("Wybierz wydarzenie");
-        eventComboBox.setValue(all.stream().findFirst().get());
+        var first = all.stream().findFirst();
+        if(first.isPresent()) {
+            eventComboBox.setValue(first.get());
+        }
+        eventComboBox.setItemLabelGenerator(MusicEvent::getName);
         eventComboBox.addValueChangeListener(event -> {
-            String selectedEvent = event.getValue();
-            refreshGrid(selectedEvent);
+            MusicEvent selectedEvent = event.getValue();
+            refreshGrid(selectedEvent.getId());
         });
         return eventComboBox;
     }
 
-    private void refreshGrid(String selectedEvent) {
-        var pres = musicianRepository.findAll()
-                .stream()
-                .map(m -> new Presence(m.getFirstName() + " " + m.getLastName()))
-                .sorted(Comparator.comparing(Presence::getFullName))
-                .collect(Collectors.toList());
+    private void refreshGrid(UUID eventId) {
+        var pres = queryGateway.query(new GetMusicianPresenceInMusicEventQuery(eventId), ResponseTypes.multipleInstancesOf(PresenceDto.class)).join();
+        checkboxMusicianIdMap.clear();
         grid.setItems(pres);
     }
 
-    private Checkbox createCheckBox(Presence presence) {
+    private Checkbox createCheckBox(PresenceDto presence) {
         Checkbox checkbox = new Checkbox();
+        checkboxMusicianIdMap.put(checkbox, presence.getMusicianId());
+        checkbox.setValue(presence.isChecked());
         checkbox.addValueChangeListener(event -> {
-            presence.setChecked(checkbox.getValue());
-//            personRepository.save(person); // Zapisz zmienione dane osoby w repozytori
+            var present = checkbox.getValue();
+            presence.setChecked(present);
+            var eventId = eventComboBox.getValue().getId();
+            var musicianId = checkboxMusicianIdMap.get(event.getSource());
+            commandGateway.send(new ChangeMusicianPresenceCommand(presence.getPresenceId(), eventId, musicianId, present)).join();
         });
-
         return checkbox;
-    }
-
-    public static class Presence {
-        private String fullName;
-        private boolean checked;
-
-        public Presence(String fullName) {
-            this.fullName = fullName;
-        }
-
-        public String getFullName() {
-            return fullName;
-        }
-
-        public boolean isChecked() {
-            return checked;
-        }
-
-        public void setChecked(boolean checked) {
-            this.checked = checked;
-        }
     }
 
 }

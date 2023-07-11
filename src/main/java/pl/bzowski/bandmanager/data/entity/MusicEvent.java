@@ -2,13 +2,21 @@ package pl.bzowski.bandmanager.data.entity;
 
 import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-public class Event extends AbstractEntity {
+public class MusicEvent extends AbstractEntity {
 
     private String name;
     private String address;
     private LocalDateTime dateTime;
+
+    public MusicEvent() {
+    }
+
+    public MusicEvent(UUID musicEventId) {
+       super.setId(musicEventId);
+    }
 
     public String getName() {
         return name;

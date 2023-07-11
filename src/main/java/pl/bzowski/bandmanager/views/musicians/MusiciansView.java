@@ -135,7 +135,6 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
                     this.musician = new Musician();
                 }
                 binder.writeBean(this.musician);
-//                commandGateway.send(new UpdateMusicianCommand(this.musician));
                 if(this.musician.getId() == null) {
                     commandGateway.send(new CreateMusicianCommand(UUID.randomUUID(),
                             this.musician.getFirstName(),
@@ -205,7 +204,7 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
         email = new TextField("Email");
         phone = new TextField("Phone");
         dateOfBirth = new DatePicker("Date Of Birth");
-        joinDate = new DatePicker("Join data");
+        joinDate = new DatePicker("Join Date");
         active = new Checkbox("Active");
         address = new TextField("Address");
         formLayout.add(firstName, lastName, email, phone, dateOfBirth, joinDate, active, address);
