@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.presence;
+package pl.bzowski.bandmanager.presence.commands;
 
 import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;

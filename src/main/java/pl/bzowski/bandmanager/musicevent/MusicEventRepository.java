@@ -7,6 +7,7 @@ import pl.bzowski.bandmanager.data.entity.MusicEvent;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,4 +15,8 @@ public interface MusicEventRepository  extends JpaRepository<MusicEvent, UUID>,
         JpaSpecificationExecutor<MusicEvent> {
         @Query("SELECT me from MusicEvent me where me.dateTime >= :joinDate")
         List<MusicEvent> findAllAfter(LocalDateTime joinDate);
+
+        
+        @Query("SELECT me FROM MusicEvent me where me.dateTime between :from and :to")
+        Collection<MusicEvent> findAllBetween(LocalDateTime from, LocalDateTime to);
 }

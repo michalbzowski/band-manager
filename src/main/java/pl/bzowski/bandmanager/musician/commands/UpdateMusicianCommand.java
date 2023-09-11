@@ -12,20 +12,17 @@ public final class UpdateMusicianCommand {
     private final UUID id;
     private final String firstName;
     private final String lastName;
-    private final String email;
     private final String phone;
     private final LocalDate dateOfBirth;
     private final LocalDate joinDate;
     private final Boolean active;
     private final String address;
 
-    public UpdateMusicianCommand(UUID id, String firstName, String lastName,
-                                 String email, String phone, LocalDate dateOfBirth, LocalDate joinDate,
+    public UpdateMusicianCommand(UUID id, String firstName, String lastName, String phone, LocalDate dateOfBirth, LocalDate joinDate,
                                  Boolean active, String address) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
         this.phone = phone;
         this.dateOfBirth = dateOfBirth;
         this.joinDate = joinDate;
@@ -44,10 +41,6 @@ public final class UpdateMusicianCommand {
 
     public String lastName() {
         return lastName;
-    }
-
-    public String email() {
-        return email;
     }
 
     public String phone() {
@@ -78,7 +71,6 @@ public final class UpdateMusicianCommand {
         return Objects.equals(this.id, that.id) &&
                 Objects.equals(this.firstName, that.firstName) &&
                 Objects.equals(this.lastName, that.lastName) &&
-                Objects.equals(this.email, that.email) &&
                 Objects.equals(this.phone, that.phone) &&
                 Objects.equals(this.dateOfBirth, that.dateOfBirth) &&
                 Objects.equals(this.joinDate, that.joinDate) &&
@@ -88,7 +80,7 @@ public final class UpdateMusicianCommand {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, phone, dateOfBirth, joinDate, active, address);
+        return Objects.hash(id, firstName, lastName, phone, dateOfBirth, joinDate, active, address);
     }
 
     @Override
@@ -97,7 +89,6 @@ public final class UpdateMusicianCommand {
                 "id=" + id + ", " +
                 "firstName=" + firstName + ", " +
                 "lastName=" + lastName + ", " +
-                "email=" + email + ", " +
                 "phone=" + phone + ", " +
                 "dateOfBirth=" + dateOfBirth + ", " +
                 "joinDate=" + joinDate + ", " +

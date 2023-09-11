@@ -9,8 +9,6 @@ public class Musician extends AbstractEntity {
 
     private String firstName;
     private String lastName;
-    @Email
-    private String email;
     private String phone;
     private LocalDate dateOfBirth;
     private LocalDate joinDate;
@@ -29,12 +27,6 @@ public class Musician extends AbstractEntity {
     }
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
     }
     public String getPhone() {
         return phone;
@@ -71,5 +63,17 @@ public class Musician extends AbstractEntity {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+    public boolean joinDateIsDifferent(LocalDate joinDate) {
+        return !this.joinDate.equals(joinDate);
+    }
+    public boolean joinDateIsBefore(LocalDate joinDate) {
+        return this.joinDate.isBefore(joinDate);
+    }
+    public boolean joinDateIsAfter(LocalDate joinDate) {
+        return this.joinDate.isAfter(joinDate);
+    }
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 }

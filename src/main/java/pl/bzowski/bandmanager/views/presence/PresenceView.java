@@ -1,5 +1,6 @@
 package pl.bzowski.bandmanager.views.presence;
 
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -13,8 +14,8 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import pl.bzowski.bandmanager.data.entity.MusicEvent;
 import pl.bzowski.bandmanager.musicevent.GetAllMusicEventsQuery;
-import pl.bzowski.bandmanager.presence.ChangeMusicianPresenceCommand;
 import pl.bzowski.bandmanager.presence.PresenceDto;
+import pl.bzowski.bandmanager.presence.commands.ChangeMusicianPresenceCommand;
 import pl.bzowski.bandmanager.presence.queries.GetMusicianPresenceInMusicEventQuery;
 import pl.bzowski.bandmanager.views.MainLayout;
 
@@ -37,7 +38,7 @@ public class PresenceView extends VerticalLayout {
         this.commandGateway = commandGateway;
 
 
-        comboBox();
+        createComboBox();
         grid();
         add(eventComboBox, grid);
 
@@ -54,8 +55,9 @@ public class PresenceView extends VerticalLayout {
         grid.addComponentColumn(this::createCheckBox).setHeader("Obecna / obecny");
     }
 
-    private ComboBox<MusicEvent> comboBox() {
+    private ComboBox<MusicEvent> createComboBox() {
         this.eventComboBox = new ComboBox<>();
+        this.eventComboBox.setWidthFull();
         List<MusicEvent> all = queryGateway.query(new GetAllMusicEventsQuery(), ResponseTypes.multipleInstancesOf(MusicEvent.class)).join();
 //        List<MusicEvent> all = List.of();
         eventComboBox.setItems(all);
@@ -64,7 +66,7 @@ public class PresenceView extends VerticalLayout {
         if(first.isPresent()) {
             eventComboBox.setValue(first.get());
         }
-        eventComboBox.setItemLabelGenerator(MusicEvent::getName);
+        eventComboBox.setItemLabelGenerator(MusicEvent::getDescription);
         eventComboBox.addValueChangeListener(event -> {
             MusicEvent selectedEvent = event.getValue();
             refreshGrid(selectedEvent.getId());

@@ -12,19 +12,17 @@ public final class CreateMusicianCommand {
     private final UUID musicianId;
     private final String firstName;
     private final String lastName;
-    private final String email;
     private final String phone;
     private final LocalDate dateOfBirth;
     private final LocalDate joinDate;
     private final Boolean active;
     private final String address;
 
-    public CreateMusicianCommand(UUID musicianId, String firstName, String lastName, String email, String phone,
+    public CreateMusicianCommand(UUID musicianId, String firstName, String lastName, String phone,
                                  LocalDate dateOfBirth, LocalDate joinDate, Boolean active, String address) {
         this.musicianId = musicianId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
         this.phone = phone;
         this.dateOfBirth = dateOfBirth;
         this.joinDate = joinDate;
@@ -42,10 +40,6 @@ public final class CreateMusicianCommand {
 
     public String lastName() {
         return lastName;
-    }
-
-    public String email() {
-        return email;
     }
 
     public String phone() {
@@ -76,7 +70,6 @@ public final class CreateMusicianCommand {
         return Objects.equals(this.musicianId, that.musicianId) &&
                 Objects.equals(this.firstName, that.firstName) &&
                 Objects.equals(this.lastName, that.lastName) &&
-                Objects.equals(this.email, that.email) &&
                 Objects.equals(this.phone, that.phone) &&
                 Objects.equals(this.dateOfBirth, that.dateOfBirth) &&
                 Objects.equals(this.joinDate, that.joinDate) &&
@@ -85,7 +78,7 @@ public final class CreateMusicianCommand {
 
     @Override
     public int hashCode() {
-        return Objects.hash(musicianId, firstName, lastName, email, phone, dateOfBirth, joinDate, active);
+        return Objects.hash(musicianId, firstName, lastName, phone, dateOfBirth, joinDate, active);
     }
 
     @Override
@@ -94,7 +87,6 @@ public final class CreateMusicianCommand {
                 "musicianId=" + musicianId + ", " +
                 "firstName=" + firstName + ", " +
                 "lastName=" + lastName + ", " +
-                "email=" + email + ", " +
                 "phone=" + phone + ", " +
                 "dateOfBirth=" + dateOfBirth + ", " +
                 "joinDate=" + joinDate + ", " +

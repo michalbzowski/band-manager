@@ -37,4 +37,8 @@ public class MusicEvent extends AbstractEntity {
         this.dateTime = dateTime;
     }
 
+    public String getDescription() {
+        return name + " " + dateTime;
+    }
+
 }

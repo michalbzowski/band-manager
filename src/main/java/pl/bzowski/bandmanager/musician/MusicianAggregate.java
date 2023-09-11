@@ -21,7 +21,6 @@ public class MusicianAggregate {
     private UUID musicianId;
     private String firstName;
     private String lastName;
-    private String email;
     private String phone;
     private LocalDate dateOfBirth;
     private LocalDate joinDate;
@@ -37,7 +36,6 @@ public class MusicianAggregate {
         apply(new MusicianSignedUpEvent(command.musicianId(),
                 command.firstName(),
                 command.lastName(),
-                command.email(),
                 command.phone(),
                 command.dateOfBirth(),
                 command.joinDate(),
@@ -51,7 +49,6 @@ public class MusicianAggregate {
         this.musicianId = evt.getMusicianId();
         this.firstName = evt.getFirstName();
         this.lastName = evt.getLastName();
-        this.email = evt.getEmail();
         this.phone = evt.getPhone();
         this.dateOfBirth = evt.getDateOfBirth();
         this.joinDate = evt.getJoinDate();
@@ -64,7 +61,6 @@ public class MusicianAggregate {
         apply(new MusicianUpdatedEvent(command.id(),
                 command.firstName(),
                 command.lastName(),
-                command.email(),
                 command.phone(),
                 command.dateOfBirth(),
                 command.joinDate(),
@@ -78,7 +74,6 @@ public class MusicianAggregate {
         this.musicianId = evt.getId();
         this.firstName = evt.getFirstName();
         this.lastName = evt.getLastName();
-        this.email = evt.getEmail();
         this.phone = evt.getPhone();
         this.dateOfBirth = evt.getDateOfBirth();
         this.joinDate = evt.getJoinDate();

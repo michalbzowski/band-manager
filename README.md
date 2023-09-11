@@ -1,7 +1,8 @@
 # Band Manager
 
-This project can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+Features:
+1. Add Music Event - by Music Event I understand place and date where musicians are gadhered for some reason eg. recheasel or concert. 
+2. Add Musician - person with name, born date, join date etc
 
 ## Running the application
 

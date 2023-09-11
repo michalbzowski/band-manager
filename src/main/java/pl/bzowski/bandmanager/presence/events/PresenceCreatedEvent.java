@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.presence;
+package pl.bzowski.bandmanager.presence.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class CreatePresenceEntryCommand {
+public class PresenceCreatedEvent {
 
     @TargetAggregateIdentifier
     private UUID presenceId;

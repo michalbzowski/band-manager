@@ -31,7 +31,6 @@ public class MusicianFormView extends Div {
 
     private TextField firstName = new TextField("First name");
     private TextField lastName = new TextField("Last name");
-    private EmailField email = new EmailField("Email address");
     private DatePicker dateOfBirth = new DatePicker("Birthday");
     private PhoneNumberField phone = new PhoneNumberField("Phone number");
 
@@ -68,8 +67,7 @@ public class MusicianFormView extends Div {
 
     private Component createFormLayout() {
         FormLayout formLayout = new FormLayout();
-        email.setErrorMessage("Please enter a valid email address");
-        formLayout.add(firstName, lastName, dateOfBirth, phone, email);
+        formLayout.add(firstName, lastName, dateOfBirth, phone);
         return formLayout;
     }
 

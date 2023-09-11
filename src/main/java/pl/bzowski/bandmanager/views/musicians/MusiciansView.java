@@ -54,7 +54,6 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
 
     private TextField firstName;
     private TextField lastName;
-    private TextField email;
     private TextField phone;
     private DatePicker dateOfBirth;
     private DatePicker joinDate;
@@ -87,7 +86,6 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
         // Configure Grid
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("joinDate").setAutoWidth(true);
@@ -139,7 +137,6 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
                     commandGateway.send(new CreateMusicianCommand(UUID.randomUUID(),
                             this.musician.getFirstName(),
                             this.musician.getLastName(),
-                            this.musician.getEmail(),
                             this.musician.getPhone(),
                             this.musician.getDateOfBirth(),
                             this.musician.getJoinDate(),
@@ -149,7 +146,6 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
                     commandGateway.send(new UpdateMusicianCommand(this.musician.getId(),
                             this.musician.getFirstName(),
                             this.musician.getLastName(),
-                            this.musician.getEmail(),
                             this.musician.getPhone(),
                             this.musician.getDateOfBirth(),
                             this.musician.getJoinDate(),
@@ -201,13 +197,12 @@ public class MusiciansView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         firstName = new TextField("First Name");
         lastName = new TextField("Last Name");
-        email = new TextField("Email");
         phone = new TextField("Phone");
         dateOfBirth = new DatePicker("Date Of Birth");
         joinDate = new DatePicker("Join Date");
         active = new Checkbox("Active");
         address = new TextField("Address");
-        formLayout.add(firstName, lastName, email, phone, dateOfBirth, joinDate, active, address);
+        formLayout.add(firstName, lastName, phone, dateOfBirth, joinDate, active, address);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);

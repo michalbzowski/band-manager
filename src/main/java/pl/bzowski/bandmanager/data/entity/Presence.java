@@ -11,6 +11,7 @@ public class Presence extends AbstractEntity {
     private UUID musicianId;
 
     private String musicianFullName;
+    
     @ManyToOne
     private MusicEvent musicEvent;
 
