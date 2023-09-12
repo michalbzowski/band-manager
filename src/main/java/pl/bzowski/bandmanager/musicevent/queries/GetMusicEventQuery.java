@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.musicevent;
+package pl.bzowski.bandmanager.musicevent.queries;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

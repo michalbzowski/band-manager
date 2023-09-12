@@ -33,14 +33,14 @@ public class MusicianAggregate {
 
     @CommandHandler
     public MusicianAggregate(CreateMusicianCommand command) {
-        apply(new MusicianSignedUpEvent(command.musicianId(),
-                command.firstName(),
-                command.lastName(),
-                command.phone(),
-                command.dateOfBirth(),
-                command.joinDate(),
-                command.active(),
-                command.address()
+        apply(new MusicianSignedUpEvent(command.getMusicianId(),
+                command.getFirstName(),
+                command.getLastName(),
+                command.getPhone(),
+                command.getDateOfBirth(),
+                command.getJoinDate(),
+                command.getActive(),
+                command.getAddress()
         ));
     }
 

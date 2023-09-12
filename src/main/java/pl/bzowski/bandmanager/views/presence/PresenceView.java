@@ -1,6 +1,5 @@
 package pl.bzowski.bandmanager.views.presence;
 
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -13,7 +12,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import pl.bzowski.bandmanager.data.entity.MusicEvent;
-import pl.bzowski.bandmanager.musicevent.GetAllMusicEventsQuery;
+import pl.bzowski.bandmanager.musicevent.queries.GetAllMusicEventsQuery;
 import pl.bzowski.bandmanager.presence.PresenceDto;
 import pl.bzowski.bandmanager.presence.commands.ChangeMusicianPresenceCommand;
 import pl.bzowski.bandmanager.presence.queries.GetMusicianPresenceInMusicEventQuery;

@@ -1,18 +1,18 @@
-package pl.bzowski.bandmanager.musicevent;
+package pl.bzowski.bandmanager.musicevent.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class MusicEventCreatedEvent {
-
-    private UUID musicEventId;
+public class CreateMusicEventCommand {
+    @TargetAggregateIdentifier
+    private UUID id;
     private String name;
     private String address;
     private LocalDateTime dateTime;
-
 }

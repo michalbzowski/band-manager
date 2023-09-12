@@ -5,6 +5,10 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
+import pl.bzowski.bandmanager.musicevent.commands.CreateMusicEventCommand;
+import pl.bzowski.bandmanager.musicevent.commands.UpdateMusicEventCommand;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventCreatedEvent;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventUpdatedEvent;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,7 +29,7 @@ public class MusicEventAggregate {
     @CommandHandler
     public MusicEventAggregate(CreateMusicEventCommand command) {
         AggregateLifecycle.apply(new MusicEventCreatedEvent(
-                UUID.randomUUID(),
+                command.getId(),
                 command.getName(),
                 command.getAddress(),
                 command.getDateTime()));
@@ -42,7 +46,7 @@ public class MusicEventAggregate {
     @CommandHandler
     public void handle(UpdateMusicEventCommand command) {
         AggregateLifecycle.apply(new MusicEventCreatedEvent(
-                UUID.randomUUID(),
+                command.getId(),
                 command.getName(),
                 command.getAddress(),
                 command.getDateTime()));

@@ -33,13 +33,10 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.bzowski.bandmanager.data.entity.MusicEvent;
-import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.data.service.EventService;
-import pl.bzowski.bandmanager.musicevent.CreateMusicEventCommand;
-import pl.bzowski.bandmanager.musicevent.GetAllMusicEventsQuery;
-import pl.bzowski.bandmanager.musicevent.GetMusicEventQuery;
-import pl.bzowski.bandmanager.musicevent.UpdateMusicEventCommand;
-import pl.bzowski.bandmanager.musician.queries.GetAllMusiciansQuery;
+import pl.bzowski.bandmanager.musicevent.commands.CreateMusicEventCommand;
+import pl.bzowski.bandmanager.musicevent.queries.GetAllMusicEventsQuery;
+import pl.bzowski.bandmanager.musicevent.queries.GetMusicEventQuery;
+import pl.bzowski.bandmanager.musicevent.commands.UpdateMusicEventCommand;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Events")
@@ -123,6 +120,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
                 binder.writeBean(this.event);
                 if (this.event.getId() == null) {
                     commandGateway.send(new CreateMusicEventCommand(
+                            UUID.randomUUID(),
                             event.getName(),
                             event.getAddress(),
                             event.getDateTime()
