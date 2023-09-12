@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import pl.bzowski.bandmanager.data.entity.Musician;
+import pl.bzowski.bandmanager.data.entity.MusicianHistory;
 import pl.bzowski.bandmanager.musicevent.MusicEventRepository;
 import pl.bzowski.bandmanager.musician.events.MusicianSignedUpEvent;
 import pl.bzowski.bandmanager.musician.events.MusicianUpdatedEvent;
 import pl.bzowski.bandmanager.presence.PresenceRepository;
-import pl.bzowski.bandmanager.presence.commands.CreatePresenceEntryCommand;
-import pl.bzowski.bandmanager.presence.commands.RemovePresenceCommand;
 import pl.bzowski.bandmanager.views.musicians.GetOneMusician;
 
 import java.util.List;
@@ -24,14 +23,15 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class MusicianService {
+public class MusicianProjection {
 
+    private final MusicianHistoryRepository musicianHistory;
     private final MusicianRepository musicianRepository;
     private final PresenceRepository presenceRepository;
     private final MusicEventRepository musicEventRepository;
     private final EventGateway eventGateway;
 
-    public MusicianService(MusicianRepository musicianRepository, PresenceRepository presenceRepository, MusicEventRepository musicEventRepository, EventGateway eventGateway) {
+    public MusicianProjection(MusicianRepository musicianRepository, PresenceRepository presenceRepository, MusicEventRepository musicEventRepository, EventGateway eventGateway) {
         this.musicianRepository = musicianRepository;
         this.presenceRepository = presenceRepository;
         this.eventGateway = eventGateway;
@@ -50,6 +50,7 @@ public class MusicianService {
         entity.setActive(event.getActive());
         entity.setAddress(event.getAddress());
         musicianRepository.save(entity);
+        musicianHistory.save(new MusicianHistory(entity));
     }
 
     @EventHandler
@@ -80,7 +81,9 @@ public class MusicianService {
         byId.setActive(event.getActive());
         byId.setAddress(event.getAddress());
         musicianRepository.save(byId);
+        musicianHistory.save(new MusicianHistory(byId));
     }
+
 
     public Musician update(Musician entity) {
         return musicianRepository.save(entity);
@@ -106,6 +109,11 @@ public class MusicianService {
     @QueryHandler
     public Musician on(GetOneMusician query) {
         return musicianRepository.findById(query.getId()).orElseThrow();
+    }
+
+    @QueryHandler
+    public List<MusicianHistoryDto> on(GetMusicianHistory query) {
+        return repository.findHistoryById(query.getMusicianId());
     }
 
 }

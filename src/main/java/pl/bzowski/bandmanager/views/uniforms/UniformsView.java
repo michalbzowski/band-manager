@@ -29,7 +29,7 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.musician.queries.MusicianService;
+import pl.bzowski.bandmanager.musician.queries.MusicianProjection;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Uniforms")
@@ -59,10 +59,10 @@ public class UniformsView extends Div implements BeforeEnterObserver {
 
     private Musician samplePerson;
 
-    private final MusicianService musicianService;
+    private final MusicianProjection musicianProjection;
 
-    public UniformsView(MusicianService musicianService) {
-        this.musicianService = musicianService;
+    public UniformsView(MusicianProjection musicianProjection) {
+        this.musicianProjection = musicianProjection;
         addClassNames("uniforms-view");
 
         // Create UI
@@ -90,7 +90,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
 //
 //        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
 
-        grid.setItems(query -> musicianService.list(
+        grid.setItems(query -> musicianProjection.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -123,7 +123,7 @@ public class UniformsView extends Div implements BeforeEnterObserver {
                     this.samplePerson = new Musician();
                 }
                 binder.writeBean(this.samplePerson);
-                musicianService.update(this.samplePerson);
+                musicianProjection.update(this.samplePerson);
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");

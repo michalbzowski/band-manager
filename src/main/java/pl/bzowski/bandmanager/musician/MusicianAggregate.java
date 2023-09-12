@@ -46,6 +46,9 @@ public class MusicianAggregate {
 
     @EventSourcingHandler
     public void on(MusicianSignedUpEvent evt) {
+        if (evt.getJoinDate() == null) {
+            throw new MusicianJoinDateIsEmptyException();
+        }
         this.musicianId = evt.getMusicianId();
         this.firstName = evt.getFirstName();
         this.lastName = evt.getLastName();
