@@ -32,7 +32,6 @@ public class MusicianHistory extends AbstractEntity {
         this.modificationDate = LocalDateTime.now();
         this.firstName =entity.getFirstName();
         this.lastName = entity.getLastName();
-        this.email = entity.getEmail();
         this.phone = entity.getPhone();
         this.joinDate = entity.getJoinDate();
         this.dateOfBirth = entity.getDateOfBirth();

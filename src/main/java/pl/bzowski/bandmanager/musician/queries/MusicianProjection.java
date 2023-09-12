@@ -31,11 +31,12 @@ public class MusicianProjection {
     private final MusicEventRepository musicEventRepository;
     private final EventGateway eventGateway;
 
-    public MusicianProjection(MusicianRepository musicianRepository, PresenceRepository presenceRepository, MusicEventRepository musicEventRepository, EventGateway eventGateway) {
+    public MusicianProjection(MusicianRepository musicianRepository, PresenceRepository presenceRepository, MusicEventRepository musicEventRepository, EventGateway eventGateway, MusicianHistoryRepository musicianHistory) {
         this.musicianRepository = musicianRepository;
         this.presenceRepository = presenceRepository;
         this.eventGateway = eventGateway;
         this.musicEventRepository = musicEventRepository;
+        this.musicianHistory = musicianHistory;
     }
 
     @EventHandler
@@ -113,7 +114,7 @@ public class MusicianProjection {
 
     @QueryHandler
     public List<MusicianHistoryDto> on(GetMusicianHistory query) {
-        return repository.findHistoryById(query.getMusicianId());
+        return musicianRepository.findHistoryById(query.getMusicianId());
     }
 
 }
