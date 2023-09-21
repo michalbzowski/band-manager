@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.musicevent;
+package pl.bzowski.bandmanager.musicevent.commands;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,8 +8,8 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class UpdateMusicEventCommand {
-    private UUID id;
+public class CreateMusicEventCommand {
+    private UUID musicEventId;
     private String name;
     private String address;
     private LocalDateTime dateTime;

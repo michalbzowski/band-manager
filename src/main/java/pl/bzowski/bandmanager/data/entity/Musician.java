@@ -1,7 +1,6 @@
 package pl.bzowski.bandmanager.data.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
 
 @Entity
@@ -63,15 +62,6 @@ public class Musician extends AbstractEntity {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-    public boolean joinDateIsDifferent(LocalDate joinDate) {
-        return !this.joinDate.equals(joinDate);
-    }
-    public boolean joinDateIsBefore(LocalDate joinDate) {
-        return this.joinDate.isBefore(joinDate);
-    }
-    public boolean joinDateIsAfter(LocalDate joinDate) {
-        return this.joinDate.isAfter(joinDate);
     }
     public String getFullName() {
         return firstName + " " + lastName;

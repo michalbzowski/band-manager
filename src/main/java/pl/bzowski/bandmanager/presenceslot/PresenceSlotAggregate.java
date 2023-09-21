@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.presence;
+package pl.bzowski.bandmanager.presenceslot;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -8,17 +8,17 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
 import lombok.extern.slf4j.Slf4j;
-import pl.bzowski.bandmanager.presence.commands.ChangeMusicianPresenceCommand;
-import pl.bzowski.bandmanager.presence.commands.CreatePresenceEntryCommand;
-import pl.bzowski.bandmanager.presence.commands.RemovePresenceCommand;
-import pl.bzowski.bandmanager.presence.events.PresenceCreatedEvent;
-import pl.bzowski.bandmanager.presence.events.PresenceRemovedEvent;
-import pl.bzowski.bandmanager.presence.queries.MusicianMusicEventPresenceChangedEvent;
+import pl.bzowski.bandmanager.presenceslot.commands.ChangeMusicianPresenceCommand;
+import pl.bzowski.bandmanager.presenceslot.commands.CreatePresenceSlotCommand;
+import pl.bzowski.bandmanager.presenceslot.commands.RemovePresenceCommand;
+import pl.bzowski.bandmanager.presenceslot.events.PresenceRemovedEvent;
+import pl.bzowski.bandmanager.presenceslot.events.PresenceSlotCreatedEvent;
+import pl.bzowski.bandmanager.presenceslot.queries.MusicianMusicEventPresenceChangedEvent;
 
 import java.util.UUID;
 @Aggregate
 @Slf4j
-public class PresenceAggregate {
+public class PresenceSlotAggregate {
 
     @AggregateIdentifier
     private UUID presenceId;
@@ -26,14 +26,14 @@ public class PresenceAggregate {
     private UUID musicianId;
     private boolean present;
 
-    public PresenceAggregate() {
+    public PresenceSlotAggregate() {
 
     }
 
     @CommandHandler
-    public PresenceAggregate(CreatePresenceEntryCommand command) {
+    public PresenceSlotAggregate(CreatePresenceSlotCommand command) {
         log.info("CreatePresenceEntryCommand: " + command);
-        AggregateLifecycle.apply(new PresenceCreatedEvent(
+        AggregateLifecycle.apply(new PresenceSlotCreatedEvent(
                 command.getPresenceId(),
                 command.getEventId(),
                 command.getMusicianId(),
@@ -42,7 +42,7 @@ public class PresenceAggregate {
     }
 
     @EventSourcingHandler
-    public void on(PresenceCreatedEvent event) {
+    public void on(PresenceSlotCreatedEvent event) {
         log.info("PresenceCreatedEvent: " + event);
         this.presenceId = event.getPresenceId();
         this.eventId = event.getEventId();

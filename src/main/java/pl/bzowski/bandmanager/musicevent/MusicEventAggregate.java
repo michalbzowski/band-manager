@@ -6,6 +6,13 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
+import pl.bzowski.bandmanager.musicevent.commands.CreateMusicEventCommand;
+import pl.bzowski.bandmanager.musicevent.commands.UpdateMusicEventCommand;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventCreatedEvent;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventDateCreated;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventDateUpdated;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventUpdatedEvent;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -25,10 +32,11 @@ public class MusicEventAggregate {
     @CommandHandler
     public MusicEventAggregate(CreateMusicEventCommand command) {
         AggregateLifecycle.apply(new MusicEventCreatedEvent(
-                UUID.randomUUID(),
+                command.getMusicEventId(),
                 command.getName(),
                 command.getAddress(),
-                command.getDateTime()));
+                command.getDateTime()))
+            .andThenApply(() -> new MusicEventDateCreated(command.getMusicEventId(), command.getDateTime()));
     }
 
     @EventSourcingHandler
@@ -41,11 +49,15 @@ public class MusicEventAggregate {
 
     @CommandHandler
     public void handle(UpdateMusicEventCommand command) {
+        var currentDateTime = this.dateTime;
         AggregateLifecycle.apply(new MusicEventCreatedEvent(
-                UUID.randomUUID(),
+                command.getId(),
                 command.getName(),
                 command.getAddress(),
-                command.getDateTime()));
+                command.getDateTime()))
+            .andThenApplyIf(
+                () -> !currentDateTime.equals(command.getDateTime()), 
+                () -> new MusicEventDateUpdated(command.getId(), currentDateTime, command.getDateTime()));
     }
 
     @EventSourcingHandler

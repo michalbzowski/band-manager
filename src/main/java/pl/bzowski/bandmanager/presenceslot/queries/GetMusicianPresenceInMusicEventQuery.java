@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.presence.queries;
+package pl.bzowski.bandmanager.presenceslot.queries;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

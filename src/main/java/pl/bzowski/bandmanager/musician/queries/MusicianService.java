@@ -14,9 +14,9 @@ import pl.bzowski.bandmanager.data.entity.Musician;
 import pl.bzowski.bandmanager.musicevent.MusicEventRepository;
 import pl.bzowski.bandmanager.musician.events.MusicianSignedUpEvent;
 import pl.bzowski.bandmanager.musician.events.MusicianUpdatedEvent;
-import pl.bzowski.bandmanager.presence.PresenceRepository;
-import pl.bzowski.bandmanager.presence.commands.CreatePresenceEntryCommand;
-import pl.bzowski.bandmanager.presence.commands.RemovePresenceCommand;
+import pl.bzowski.bandmanager.presenceslot.PresenceRepository;
+import pl.bzowski.bandmanager.presenceslot.commands.CreatePresenceSlotCommand;
+import pl.bzowski.bandmanager.presenceslot.commands.RemovePresenceCommand;
 import pl.bzowski.bandmanager.views.musicians.GetOneMusician;
 
 import java.util.List;
@@ -55,27 +55,12 @@ public class MusicianService {
     @EventHandler
     public void on(MusicianUpdatedEvent event) {
         log.info("On MusicianUpdatedEvent");
-        var byId = musicianRepository.findById(event.getId()).orElse(null);
-        byId.setId(event.getId());
+        var byId = musicianRepository.findById(event.getMusicianId()).orElse(null);
+        byId.setId(event.getMusicianId());
         byId.setFirstName(event.getFirstName());
         byId.setLastName(event.getLastName());
         byId.setPhone(event.getPhone());
         byId.setDateOfBirth(event.getDateOfBirth());
-
-        if (byId.joinDateIsBefore(event.getJoinDate())) {
-            log.info("Joind date is before");
-            // presenceRepository.findAllBetween(event.getId(), byId.getJoinDate(), event.getJoinDate())
-            // .stream()
-            // .forEach(p -> commandGateway.send(new RemovePresenceCommand(p.getId())));
-        }
-
-        if (byId.joinDateIsAfter(event.getJoinDate())) {
-            log.info("Joind date is after");
-            // musicEventRepository.findAllBetween(event.getJoinDate().atStartOfDay(), byId.getJoinDate().atStartOfDay().plusDays(1L))
-            // .stream()
-            // .forEach(me -> commandGateway.send(new CreatePresenceEntryCommand(UUID.randomUUID(), me.getId(), event.getId(), Boolean.FALSE)));
-        }
-
         byId.setJoinDate(event.getJoinDate());
         byId.setActive(event.getActive());
         byId.setAddress(event.getAddress());

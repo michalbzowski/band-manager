@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.presence;
+package pl.bzowski.bandmanager.presenceslot;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -36,4 +36,9 @@ public interface PresenceRepository extends
            " WHERE p.musicianId = :musicianId  " +
            " AND p.musicEvent.dateTime between :from and :to")
     Collection<Presence> findAllBetween(UUID musicianId, LocalDate from, LocalDate to);
+
+    @Query("SELECT p  " +
+                " FROM Presence p " + 
+                " WHERE p.musicEvent.dateTime between :from and :to")
+    Collection<Presence> findAllBetween(LocalDate from, LocalDate to);
 }

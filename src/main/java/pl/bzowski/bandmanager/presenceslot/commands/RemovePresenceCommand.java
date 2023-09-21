@@ -1,4 +1,4 @@
-package pl.bzowski.bandmanager.presence.events;
+package pl.bzowski.bandmanager.presenceslot.commands;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -11,7 +11,7 @@ import lombok.Getter;
 
 @Data
 @AllArgsConstructor
-public class PresenceRemovedEvent {
+public class RemovePresenceCommand {
 
     @TargetAggregateIdentifier
     private UUID id;

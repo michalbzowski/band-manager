@@ -1,13 +1,16 @@
 package pl.bzowski.bandmanager.musician.events;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Data
+@Builder
 @AllArgsConstructor
-@Getter
 public class MusicianSignedUpEvent {
     private final UUID musicianId;
     private final String firstName;

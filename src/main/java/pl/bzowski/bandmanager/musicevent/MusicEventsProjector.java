@@ -4,6 +4,10 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;
 import pl.bzowski.bandmanager.data.entity.MusicEvent;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventCreatedEvent;
+import pl.bzowski.bandmanager.musicevent.events.MusicEventUpdatedEvent;
+import pl.bzowski.bandmanager.musicevent.queries.GetAllMusicEventsQuery;
+import pl.bzowski.bandmanager.musicevent.queries.GetMusicEventQuery;
 
 import java.util.List;
 import java.util.Optional;
