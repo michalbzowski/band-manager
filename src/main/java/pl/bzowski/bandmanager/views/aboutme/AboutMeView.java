@@ -8,6 +8,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
@@ -18,10 +19,22 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.data.domain.PageRequest;
+import pl.bzowski.bandmanager.data.entity.MusicEvent;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.musician.queries.MusicianService;
+import pl.bzowski.bandmanager.musician.queries.GetAllMusiciansQuery;
+import pl.bzowski.bandmanager.musician.queries.GetMusicianHistory;
+import pl.bzowski.bandmanager.musician.queries.MusicianHistoryDto;
+import pl.bzowski.bandmanager.musician.queries.MusicianProjection;
+import pl.bzowski.bandmanager.presence.PresenceDto;
+import pl.bzowski.bandmanager.presence.queries.GetMusicianPresenceInMusicEventQuery;
 import pl.bzowski.bandmanager.views.MainLayout;
+
+import java.util.UUID;
 
 @PageTitle("About Me")
 @Route(value = "about-me", layout = MainLayout.class)
@@ -29,6 +42,8 @@ import pl.bzowski.bandmanager.views.MainLayout;
 @Uses(Icon.class)
 public class AboutMeView extends Div {
 
+    private final MusicianProjection personService;
+    private final QueryGateway queryGateway;
     private TextField firstName = new TextField("First name");
     private TextField lastName = new TextField("Last name");
     private EmailField email = new EmailField("Email address");
@@ -41,12 +56,19 @@ public class AboutMeView extends Div {
 
     private Binder<Musician> binder = new Binder<>(Musician.class);
 
-    public AboutMeView(MusicianService personService) {
-        addClassName("about-me-view");
+    private ComboBox<Musician> musicianComboBox = new ComboBox<>();
+    private final Grid<MusicianHistoryDto> grid = new Grid<>(MusicianHistoryDto.class, false);
 
+    public AboutMeView(MusicianProjection personService, QueryGateway queryGateway) {
+        this.personService = personService;
+        this.queryGateway = queryGateway;
+        addClassName("about-me-view");
+        add(musicianComboBox());
         add(createTitle());
         add(createFormLayout());
-        add(createButtonLayout());
+
+        add(grid());
+//        add(createButtonLayout());
 
         binder.bindInstanceFields(this);
         clearForm();
@@ -57,6 +79,27 @@ public class AboutMeView extends Div {
             Notification.show(binder.getBean().getClass().getSimpleName() + " details stored.");
             clearForm();
         });
+    }
+
+    private Component musicianComboBox() {
+        var stream = queryGateway.query(new GetAllMusiciansQuery(), ResponseTypes.multipleInstancesOf(Musician.class)).join();
+        this.musicianComboBox.setItems(stream);
+        this.musicianComboBox.setLabel("Wybierz muzyka");
+        var first = stream.stream().findFirst();
+        if(first.isPresent()) {
+            musicianComboBox.setValue(first.get());
+        }
+        musicianComboBox.setItemLabelGenerator(Musician::getLastName);
+        musicianComboBox.addValueChangeListener(event -> {
+            Musician selectedEvent = event.getValue();
+            refreshGrid(selectedEvent.getId());
+        });
+        return musicianComboBox;
+    }
+
+    private void refreshGrid(UUID musicianId) {
+        var pres = queryGateway.query(new GetMusicianHistory(musicianId), ResponseTypes.multipleInstancesOf(MusicianHistoryDto.class)).join();
+        grid.setItems(pres);
     }
 
     private void clearForm() {
@@ -125,4 +168,27 @@ public class AboutMeView extends Div {
         }
     }
 
+    private Grid<MusicianHistoryDto> grid() {
+        // Configure Grid
+        grid.addColumn("firstName").setAutoWidth(true);
+        grid.addColumn("lastName").setAutoWidth(true);
+        grid.addColumn("email").setAutoWidth(true);
+        grid.addColumn("phone").setAutoWidth(true);
+        grid.addColumn("dateOfBirth").setAutoWidth(true);
+        grid.addColumn("joinDate").setAutoWidth(true);
+        grid.addColumn("active").setAutoWidth(true);
+        grid.addColumn("address").setAutoWidth(true);
+
+        grid.setItems(query -> {
+            var page = query.getPage();
+            var pageSize = query.getPageSize();
+            var springDataSort = VaadinSpringDataHelpers.toSpringDataSort(query);
+            var of = PageRequest.of(page, pageSize, springDataSort);
+            var stream = queryGateway.query(new GetMusicianHistory(UUID.randomUUID()), ResponseTypes.multipleInstancesOf(MusicianHistoryDto.class)).join();
+
+            return stream.stream();
+        });
+
+        return grid;
+    }
 }

@@ -124,6 +124,7 @@ public class EventsView extends Div implements BeforeEnterObserver {
                 if (this.event.getId() == null) {
                     commandGateway.send(new CreateMusicEventCommand(
                             UUID.randomUUID(),
+                            UUID.randomUUID(),
                             event.getName(),
                             event.getAddress(),
                             event.getDateTime()

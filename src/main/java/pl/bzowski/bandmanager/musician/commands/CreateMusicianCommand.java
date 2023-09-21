@@ -1,6 +1,9 @@
 package pl.bzowski.bandmanager.musician.commands;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import lombok.AllArgsConstructor;

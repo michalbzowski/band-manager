@@ -1,6 +1,5 @@
 package pl.bzowski.bandmanager.views.presence;
 
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -59,9 +58,10 @@ public class PresenceView extends VerticalLayout {
         this.eventComboBox = new ComboBox<>();
         this.eventComboBox.setWidthFull();
         List<MusicEvent> all = queryGateway.query(new GetAllMusicEventsQuery(), ResponseTypes.multipleInstancesOf(MusicEvent.class)).join();
-//        List<MusicEvent> all = List.of();
+        eventComboBox.setWidthFull();
         eventComboBox.setItems(all);
         eventComboBox.setLabel("Wybierz wydarzenie");
+        eventComboBox.setItemLabelGenerator(me -> me.getName() + " : " + me.getDateTime());
         var first = all.stream().findFirst();
         if(first.isPresent()) {
             eventComboBox.setValue(first.get());

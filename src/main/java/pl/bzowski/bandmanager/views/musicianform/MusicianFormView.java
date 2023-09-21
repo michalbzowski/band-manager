@@ -20,7 +20,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import pl.bzowski.bandmanager.data.entity.Musician;
-import pl.bzowski.bandmanager.musician.queries.MusicianService;
+import pl.bzowski.bandmanager.musician.queries.MusicianProjection;
 import pl.bzowski.bandmanager.views.MainLayout;
 
 @PageTitle("Musician Form")
@@ -39,7 +39,7 @@ public class MusicianFormView extends Div {
 
     private Binder<Musician> binder = new Binder<>(Musician.class);
 
-    public MusicianFormView(MusicianService personService) {
+    public MusicianFormView(MusicianProjection personService) {
         addClassName("musician-form-view");
 
         add(createTitle());
